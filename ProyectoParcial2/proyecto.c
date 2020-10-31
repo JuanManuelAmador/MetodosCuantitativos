@@ -63,11 +63,12 @@ Matrix *multiplySTEPS(Matrix *m)
     {
         FlagSteady = 0;
         c = multiply(c, m);
+        printf("Multypling matrix, step #%i\n", i + 1);
         print(c);
         printf("\n");
         FlagSteady = equals(a, c);
         //printf("\n");
-        printf("Flag %i", FlagSteady);
+        //printf("Flag %i", FlagSteady);
         a = clonemx(c);
         if (FlagSteady == 1)
         {
@@ -76,33 +77,50 @@ Matrix *multiplySTEPS(Matrix *m)
     }
     if (FlagSteady == 1)
     {
-        printf("The matrix values doesnt change in steps %i", i);
+        printf("The matrix values doesnt change in steps %i\n", i + 1);
     }
     else
     {
-        printf("The matrix values are still changing");
+        printf("The matrix values are still changing after 100 steps\n");
     }
     return c;
 }
 
 int CheckByColumn(Matrix *m)
 {
-    int a,b;
-    int i,j;
+    double a, b;
+    int i, j;
     int flag = 0;
+    int acumC, acumR = 0;
 
     for (i = 0; i < m->rows; i++)
     {
-        acum = 0;
-        //suma cada fila
-        for (j = 1; j < m->columns; j++)
-        {   
-            a = m->numbers[i][j];
-            b = m->numbers[i][j];
-        }
 
+        //suma cada fila
+        for (j = 0; j + 1 < m->columns; j++)
+        {
+
+            a = m->numbers[i][j];
+            b = m->numbers[i][j + 1];
+
+            if ((a - b) < DIF)
+            {
+                acumC++;
+            }
+            //printf("a %f b %f acumC %i\n", a, b, acumC);
+        }
+        if (acumC == (m->columns - 1))
+        {
+            acumR++;
+        }
+        acumC = 0;
     }
-    //printf("flag is %i\n",flag);
+    //printf("acumR %i\n", acumR);
+    if (acumR == (m->rows - 1))
+    {
+        flag = 1;
+    }
+
     return flag;
 }
 //Checar si hay algun 0 en la matriz
@@ -126,21 +144,66 @@ int isRegular(Matrix *m)
     return 0;
 }
 
+void persoSteps(Matrix *m, int cord1, int cord2, int perSteps)
+{
+    Matrix *c;
+    int i, j;
+    double prob;
+
+    c = clonemx(m);
+    for (i = 1; i < perSteps; i++)
+    {
+        c = multiply(c, m);
+        printf("Multypling matrix, step #%i\n", i + 1);
+        print(c);
+        printf("\n");       
+    }
+    prob = c->numbers[cord2][cord1];
+    printf("The probability of going to [%i][%i] in %i steps is %f\n", cord1, cord2, perSteps,prob);
+}
+
+Matrix* createRandMatrix(){
+    int rows = 3;
+    int cols = 3;
+    Matrix *m;
+
+    m = constructor(rows,cols);
+    
+    //print(m);
+
+
+}
+
 int main(int argc, char *argv[])
 {
-
+    int cord1, cord2, perSteps;
     Matrix *m1;
     Matrix *m2;
     Matrix *res;
     int i;
-    int estocastico, regular;
+    int estocastico, regular, steady;
 
+    printf("Pls write the matrix to calculate, write  1 character by lane, when you finish press control + d\n");
     manual_entry(&m1);
     printf("initial matrix is:\n");
     print(m1);
+
+    if (argc == 4)
+    {
+        cord1 = atoi(argv[1]);
+        cord2 = atoi(argv[2]);
+        perSteps = atoi(argv[3]);
+        printf("You choose to calculate [%i][%i] in %i steps\n", cord1, cord2, perSteps);
+        persoSteps(m1,cord1,cord2,perSteps);
+    }
+    
     printf("\n");
 
     estocastico = checkEst(m1);
+    res = multiplySTEPS(m1);
+    steady = CheckByColumn(res);
+    regular = isRegular(res);
+
     if (estocastico != 1)
     {
         printf("La matriz es estocastica\n");
@@ -150,15 +213,23 @@ int main(int argc, char *argv[])
         printf("La matriz no es estocastica\n");
     }
 
-    res = multiplySTEPS(m1);
-
-    regular = isRegular(res);
-    if (regular != 0)
+    if (steady == 1)
     {
-        printf("La matriz no es regular");
+        printf("The matrix has steady state\n");
     }
     else
     {
-        printf("La matriz es regular");
+        printf("The matrix doesnt have steady state\n");
     }
+
+    if (regular != 0)
+    {
+        printf("La matriz no es regular\n");
+    }
+    else
+    {
+        printf("La matriz es regular\n");
+    }
+
+    createRandMatrix();
 }

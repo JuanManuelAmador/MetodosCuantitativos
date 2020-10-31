@@ -7,7 +7,7 @@
 
 #define SUCC 1
 #define FAIL -1
-#define DIF 1e-5
+#define DIF 1e-4
 
 
 /*
