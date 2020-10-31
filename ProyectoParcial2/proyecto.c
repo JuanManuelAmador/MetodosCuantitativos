@@ -4,6 +4,7 @@
 #include <string.h>
 #include "matricesLib.h"
 #include <math.h>
+#define MAX 100
 
 //Se debe compilar como gcc proyect.c -lm
 //O marcara un error relacionado con la libreria de math
@@ -27,10 +28,7 @@
 //m[fila][columna]
 //n steps
 
-
-    int checkEst(Matrix *m);
-
-    int checkEst(Matrix *m)
+int checkEst(Matrix *m)
 {
     unsigned int i, j;
     float acum;
@@ -54,55 +52,79 @@
     return flag;
 }
 
-    Matrix *multiplySTEPS(Matrix *m, int steps)
+Matrix *multiplySTEPS(Matrix *m)
+{
+    Matrix *a, *c;
+    int i, j;
+    int FlagSteady;
+    a = clonemx(m);
+    c = clonemx(m);
+    for (i = 1; i < MAX; i++)
     {
-        Matrix *a, *c;
-        int i,j;
-        int FlagSteady;
-        a = clonemx(m);
-        c = clonemx(m);
-        for (i = 1; i < steps; i++)
-        {
-            FlagSteady = 0;
-            c = multiply(c, m);
-            print(c);
-            printf("\n");
-            FlagSteady = equals(a, c);
-            //printf("\n");
-            //printf("Flag %i",FlagSteady);
-            a = clonemx(c);
-        }
+        FlagSteady = 0;
+        c = multiply(c, m);
+        print(c);
+        printf("\n");
+        FlagSteady = equals(a, c);
+        //printf("\n");
+        printf("Flag %i", FlagSteady);
+        a = clonemx(c);
         if (FlagSteady == 1)
         {
-            printf("The matrix has steady state");
+            break;
         }
-        else
-        {
-            printf("The matrix has no steady state");
-        }
-        return c;
     }
-
-    //Checar si hay algun 0 en la matriz
-    int isRegular(Matrix *m)
+    if (FlagSteady == 1)
     {
-        int i,j;
-        int flag=0;
-        float num=0;
+        printf("The matrix values doesnt change in steps %i", i);
+    }
+    else
+    {
+        printf("The matrix values are still changing");
+    }
+    return c;
+}
 
-        for (j = 0; j < m->rows; j++)
+int CheckByColumn(Matrix *m)
+{
+    int a,b;
+    int i,j;
+    int flag = 0;
+
+    for (i = 0; i < m->rows; i++)
+    {
+        acum = 0;
+        //suma cada fila
+        for (j = 1; j < m->columns; j++)
+        {   
+            a = m->numbers[i][j];
+            b = m->numbers[i][j];
+        }
+
+    }
+    //printf("flag is %i\n",flag);
+    return flag;
+}
+//Checar si hay algun 0 en la matriz
+int isRegular(Matrix *m)
+{
+    int i, j;
+    int flag = 0;
+    float num = 0;
+
+    for (j = 0; j < m->rows; j++)
+    {
+        for (i = 0; i < m->columns; i++)
         {
-            for (i = 0; i < m->columns; i++)
+            num = m->numbers[i][j];
+            if (num == 0)
             {
-                num = m->numbers[i][j];
-                if (num == 0){
-                    return -1;
-                }
+                return -1;
             }
         }
-        return 0;
     }
-
+    return 0;
+}
 
 int main(int argc, char *argv[])
 {
@@ -111,24 +133,32 @@ int main(int argc, char *argv[])
     Matrix *m2;
     Matrix *res;
     int i;
-    int estocastico,regular;
-    int steps = 10;
-
+    int estocastico, regular;
 
     manual_entry(&m1);
     printf("initial matrix is:\n");
     print(m1);
     printf("\n");
+
     estocastico = checkEst(m1);
     if (estocastico != 1)
     {
         printf("La matriz es estocastica\n");
     }
+    else
+    {
+        printf("La matriz no es estocastica\n");
+    }
 
-    res = multiplySTEPS(m1, steps);
+    res = multiplySTEPS(m1);
 
-        regular = isRegular(m1);
-    if (regular !=0){
+    regular = isRegular(res);
+    if (regular != 0)
+    {
         printf("La matriz no es regular");
+    }
+    else
+    {
+        printf("La matriz es regular");
     }
 }
