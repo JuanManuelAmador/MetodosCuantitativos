@@ -1,4 +1,5 @@
 
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -165,10 +166,19 @@ void persoSteps(Matrix *m, int cord1, int cord2, int perSteps)
 Matrix* createRandMatrix(){
     int rows = 3;
     int cols = 3;
+    double x,y,z;
     Matrix *m;
+    srand(time(NULL));
 
+
+    x =  (rand() % 100);
+    y =  (rand() % 100);
+    z =  (rand() % 100);
+    x = x / 100.0;
+    y = y / 100.0;
+    z = z / 100.0;
     m = constructor(rows,cols);
-    
+    printf("x %f , y %f , z %f \n",x,y,z);
     //print(m);
 
 
