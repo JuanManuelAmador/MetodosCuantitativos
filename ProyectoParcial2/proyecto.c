@@ -178,6 +178,7 @@ Matrix* createRandMatrix(){
     y = y / 100.0;
     z = z / 100.0;
     m = constructor(rows,cols);
+    
     printf("x %f , y %f , z %f \n",x,y,z);
     //print(m);
 
