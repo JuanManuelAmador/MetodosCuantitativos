@@ -6,6 +6,7 @@
 #include "matricesLib.h"
 #include <math.h>
 #define MAX 100
+#define DATA_SIZE 1000
 
 //Se debe compilar como gcc proyect.c -lm
 //O marcara un error relacionado con la libreria de math
@@ -18,7 +19,7 @@
    j = 0 |
    j = 1 |
    j = 2 |
-    
+
 
 */
 //usage: -r random 3x3 matrix
@@ -254,6 +255,20 @@ Matrix *ranMatrix(int a)
 
 void startMatrix()
 {
+
+}
+
+void printData(Matrix *m, int killCount, int warriorsFaction, int nameFile){
+  FILE *fp;
+  char buffer[100];
+  char Faction;
+  Faction = nameFile;
+  strcpy(buffer, "faction_stats_");
+  strcat(buffer, Faction);
+  strcat(buffer, ".txt");
+  fp = fopen(buffer, "a");// "w" means that we are going to write on this file
+  fprintf(fp, "Stage \n Faction: %i \n KillCount %i", nameFile,killCount);
+  fclose(fp); //Don't forget to close the file when finished
 }
 
 //usage ./a.out [#Factions][#Turns][#warriors]
@@ -271,7 +286,7 @@ int main(int argc, char *argv[])
     double x;
     int atackedF;
     int factionRes;
-
+    int killsFaction[6];
     gameOn = 1;
 
     if (argc == 4)
@@ -292,52 +307,65 @@ int main(int argc, char *argv[])
     //Simulate a turn
     factionRes=noFactions;
     m1 = ranMatrix(noFactions);
-    destroy_matrix(m1);
     int warriorsFactions[6];
-    print(m1);
+    //print(m1);
 
     for (i = 0; i < noFactions; i++)
     {
         warriorsFactions[i] = noWarriors;
-        printf("%i\n",warriorsFactions[i]);
+        //printf("%i\n",warriorsFactions[i]);
     }
 
     for(int j=0;j<1000;j++)
-    {    
+    {
         quienAtaca = rand() % noFactions;
         probAtaque = (rand() % 100);
         probAtaque = probAtaque / 100.0;
-        printf("quien Ataca %i probAtaque %f\n",quienAtaca,probAtaque);
+        //printf("quien Ataca %i probAtaque %f\n",quienAtaca,probAtaque);
 
         //realizar el ataque y matar un guerrero
         for (i = 0; i < noFactions; i++)
         {
             x = m1->numbers[i][quienAtaca];
-            printf("x %f \n",x);
-            
+            //printf("x %f \n",x);
+
             if (probAtaque <= x)
             {
                 atackedF = i;
                 warriorsFactions[atackedF] -= 1;
-                printf("Faction %i has %i warriors left\n",i,warriorsFactions[atackedF]);
+                killsFaction[quienAtaca]+=1;
+
+                //printf("Faction %i has %i warriors left\n",i,warriorsFactions[atackedF]);
                 if(warriorsFactions[atackedF] <= 0){
-                    
-                    printf("The faction %i died",i);
+
+                    printf("The faction %i died\n",i);
+                    for(int w=0;w<noFactions;w++){
+                    printf("The faction %i has %i warriors left\n", w, warriorsFactions[w]);
+                    }
+                    int winer = 0;
+                    int acumWiner = 0;
+                    winer = warriorsFactions[0];
+                    for(int ww=1;ww<noFactions;ww++){
+                      if(winer < warriorsFactions[ww])
+                        winer = warriorsFactions[ww];
+                        acumWiner++;
+                    }  printf("The winner is %i\n",acumWiner);
+
                     factionRes--;
-                    printf("FactionRES %i\n",factionRes);
-                    destroy_matrix(m1);
-                    m1 = ranMatrix(factionRes);
-                    print(m1);
-                   
+                    //printf("FactionRES %i\n",factionRes);
+                    printData(m1,killsFaction[0],warriorsFactions[0],0);
+                    return 0;
+
+
                 }
             }
-            
+
         }
-        
-    
+
+
     }
 
 
-    
+
 
 }
